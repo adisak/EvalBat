@@ -1,0 +1,21 @@
+@echo off
+REM  "Multi" is a thread-pool emulation helper library for controlling multi-threaded windows batch [*.BAT] files
+REM  Copyright (c) 2020 Adisak Pochanayon
+REM  Contact: adisak@gmail.com
+REM  See Multi_License.txt for details
+
+REM TEST Multi
+REM :TestMultithreading
+SETLOCAL
+SET PATH=%PATH%;..\scripts
+
+call EvalBat_Echo.bat 1 + 2 / 5
+
+echo.
+call EvalBat_Echo.bat Abs(1 - 2)
+
+echo.
+call EvalBat_Echo.bat Int((100 / 3)*100)/100
+
+ENDLOCAL
+goto:EOF
