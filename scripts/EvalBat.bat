@@ -12,6 +12,14 @@ REM :EvalBat
 REM Parameters: (VBS) Expression to evaluate
 REM Returns: EVALBAT_RESULT - result of evaluating input expression
 
+REM Uncommenting this line can be useful for debugging
+REM SET EVALBAT_VERBOSE=1
+if ""=="%EVALBAT_VERBOSE%" GOTO :SkipShowInputExpression
+	ECHO Evaluating: %*
+:SkipShowInputExpression
+
+SET EVALBAT_RESULT=
+
 REM cscript.exe /nologo "%~p0\EvalBat_vbs.vbs" "%*"
 for /f "usebackq" %%t in (`cscript.exe /nologo "%~p0\EvalBat_vbs.vbs" "%*"`) do (
 	SET EVALBAT_RESULT=%%t
