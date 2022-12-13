@@ -20,8 +20,8 @@ if ""=="%EVALBAT_VERBOSE%" GOTO :SkipShowInputExpression
 
 SET EVALBAT_RESULT=
 
-REM cscript.exe /nologo "%~p0\EvalBat_vbs.vbs" "%*"
-for /f "usebackq" %%t in (`cscript.exe /nologo "%~p0\EvalBat_vbs.vbs" "%*"`) do (
+REM cscript.exe /nologo "%~dp0\EvalBat_vbs.vbs" "%*"
+for /f "usebackq" %%t in (`cscript.exe /nologo "%~dp0\EvalBat_vbs.vbs" "%*"`) do (
 	SET EVALBAT_RESULT=%%t
 )
 REM echo Result: %EVALBAT_RESULT%
