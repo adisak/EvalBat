@@ -1,6 +1,6 @@
 REM  "EvalBat" is a helper that lets you evaluate (vbscript) expressions in a batch file
 REM  "EvalBat" can be used to add floating point support and complex math support to batch files
-REM  Copyright (c) 2020-2021 Adisak Pochanayon
+REM  Copyright (c) 2020-2022 Adisak Pochanayon
 REM  Contact: adisak@gmail.com
 REM  See EvalBat_License.txt for details
 REM  Currently hosted at https://github.com/adisak/EvalBat
@@ -8,14 +8,14 @@ REM  Currently hosted at https://github.com/adisak/EvalBat
 REM -----------------------------------
 
 Set objArgs = WScript.Arguments
-If objArgs.Count > 1 Then
+If objArgs.Count >= 1 Then
 	allArgs = objArgs(0)
 	For i = 1 to (objArgs.Count-1)
 		allArgs = allArgs + " " + objArgs(i)
 	Next
+	REM Support double quotes for strings using two single quotes in a row
+	allArgs=Replace(allArgs,"''","""")
 	wscript.echo eval(allArgs)
-ElseIf 1 = objArgs.Count Then
-	wscript.echo eval(objArgs(0))
 Else
 	wscript.echo "0"
 End If
@@ -46,6 +46,17 @@ Function CmpGT(A,B)
 End Function
 Function CmpGE(A,B)
 	CmpGE = (A >= B)
+End Function
+
+REM Floor() and Ceil()
+Function Floor(Number)
+    Floor = Int(Number)
+End Function
+Function Ceil(Number)
+    Ceil = Int(Number)
+    If Ceil <> Number then
+        Ceil = Ceil + 1
+    End If
 End Function
 
 REM Power Functions ^
