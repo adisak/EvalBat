@@ -15,12 +15,25 @@ If objArgs.Count >= 1 Then
 	Next
 	REM Support double quotes for strings using two single quotes in a row
 	allArgs=Replace(allArgs,"''","""")
+	On Error Resume Next
 	wscript.echo eval(allArgs)
+	REM Uncomment the following line for Debugging
+	' CheckForError
+	On Error Goto 0
 Else
 	wscript.echo "0"
 End If
 
 Wscript.Quit
+
+REM -----------------------------------
+Sub CheckForError
+	If Err.Number <> 0 Then
+		'Print Error for Debugging
+		WScript.Echo "Error: " & Err.Number & " Srce: " & Err.Source & " Desc: " &  Err.Description
+		Err.Clear
+	End If
+End Sub
 
 REM -----------------------------------
 REM Expand the functions supported
