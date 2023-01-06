@@ -9,5 +9,5 @@ REM  Currently hosted at https://github.com/adisak/EvalBat
 REM -----------------------------------
 
 echo Input: %*
-call EvalBat.bat %*
+call "%~dp0\EvalBat.bat" %*
 echo Result: %EVALBAT_RESULT%
