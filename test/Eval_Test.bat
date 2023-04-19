@@ -1,6 +1,6 @@
 @echo off
-REM  "Multi" is a thread-pool emulation helper library for controlling multi-threaded windows batch [*.BAT] files
-REM  Copyright (c) 2020-2022 Adisak Pochanayon
+REM  "EvalBat" is a helper that lets you evaluate (vbscript) expressions in a batch file
+REM  Copyright (c) 2020-2023 Adisak Pochanayon
 REM  Contact: adisak@gmail.com
 REM  See EvalBat_License.txt for details
 REM  Currently hosted at https://github.com/adisak/EvalBat

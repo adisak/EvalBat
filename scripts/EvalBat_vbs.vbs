@@ -87,6 +87,66 @@ Function ExpN(X,N)
 	ExpN = Exp(X * Log(N))
 End Function
 
+REM Can convert ''%DATE%'' to a VBS Date
+REM In US, %DATE% format looks like "Wed 04/19/2023"
+REM May not work outside of US
+Function DosDate(inDate)
+	Dim ssDate
+	ssDate=Split(inDate)
+	DosDate = DateValue(ssDate(1))
+End Function
+
+REM Can convert ''%TIME%'' to a VBS Time
+REM In US, %TIME% format looks like "13:11:06.75"
+REM VBScript doesn't like the decimal and hundreds in the seconds portion
+Function DosTime(inTime)
+	Dim ssTime
+	ssTime=Split(inTime,".")
+	DosTime = TimeValue(ssTime(0))
+End Function
+
+REM Convert N seconds to HH:MM:SS.ss format
+Function SecToHMSX(inSec)
+	Dim workTime,secFrac,ss,mm,hh,timestring
+	workTime = Int(inSec)
+	secFrac = inSec - Int(inSec)
+	ss = workTime MOD 60
+	workTime = (workTime - ss) / 60
+	mm = workTime MOD 60
+	hh = (workTime - mm) / 60
+	REM Format the time string
+	timestring = CStr(hh) + ":"
+	If mm < 10 Then
+		timestring = timestring + "0"
+	End If
+	timestring = timestring + CStr(mm) + ":"
+	If ss < 10 Then
+		timestring = timestring + "0"
+	End If
+	timestring = timestring + FormatNumber(ss+secFrac,2,true)
+	SecToHMSX = timestring
+End Function
+
+REM Convert N seconds to HH:MM:SS format
+Function SecToHMS(inSec)
+	Dim workTime,secFrac,ss,mm,hh,timestring
+	workTime = Int(inSec)
+	ss = workTime MOD 60
+	workTime = (workTime - ss) / 60
+	mm = workTime MOD 60
+	hh = (workTime - mm) / 60
+	REM Format the time string
+	timestring = CStr(hh) + ":"
+	If mm < 10 Then
+		timestring = timestring + "0"
+	End If
+	timestring = timestring + CStr(mm) + ":"
+	If ss < 10 Then
+		timestring = timestring + "0"
+	End If
+	timestring = timestring + CStr(ss)
+	SecToHMS = timestring
+End Function
 
 REM -----------------------------------
 REM Expand the functions supported
