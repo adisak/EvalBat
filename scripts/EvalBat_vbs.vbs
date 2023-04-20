@@ -105,38 +105,20 @@ Function DosTime(inTime)
 	DosTime = TimeValue(ssTime(0))
 End Function
 
-REM Convert N seconds to HH:MM:SS.ss format
-Function SecToHMSX(inSec)
-	Dim workTime,secFrac,ss,mm,hh,timestring
-	workTime = Int(inSec)
-	secFrac = inSec - Int(inSec)
-	ss = workTime MOD 60
-	workTime = (workTime - ss) / 60
-	mm = workTime MOD 60
-	hh = (workTime - mm) / 60
-	REM Format the time string
-	timestring = CStr(hh) + ":"
-	If mm < 10 Then
-		timestring = timestring + "0"
-	End If
-	timestring = timestring + CStr(mm) + ":"
-	If ss < 10 Then
-		timestring = timestring + "0"
-	End If
-	timestring = timestring + FormatNumber(ss+secFrac,2,true)
-	SecToHMSX = timestring
-End Function
-
 REM Convert N seconds to HH:MM:SS format
 Function SecToHMS(inSec)
-	Dim workTime,secFrac,ss,mm,hh,timestring
+	Dim workTime,ss,mm,hh,timestring
 	workTime = Int(inSec)
 	ss = workTime MOD 60
 	workTime = (workTime - ss) / 60
 	mm = workTime MOD 60
 	hh = (workTime - mm) / 60
 	REM Format the time string
-	timestring = CStr(hh) + ":"
+	timestring = ""
+	If hh < 10 Then
+		timestring = "0"
+	End If
+	timestring = timestring + CStr(hh) + ":"
 	If mm < 10 Then
 		timestring = timestring + "0"
 	End If
@@ -146,6 +128,44 @@ Function SecToHMS(inSec)
 	End If
 	timestring = timestring + CStr(ss)
 	SecToHMS = timestring
+End Function
+
+REM Convert N seconds to HH:MM:SS.sss format (accurate to milliseconds)
+Function SecToHMSX(inSec)
+	Dim secFrac
+	secFrac = inSec - Int(inSec)
+	SecToHMSX = SecToHMS(inSec) + FormatNumber(secFrac,3,false)
+End Function
+
+REM Convert N seconds to DDD:HH:MM:SS format or HH:MM:SS format
+Function SecToString(inSec)
+	Dim workTime,ss,mm,hh,dd,timestring
+	workTime = Int(inSec)
+	ss = workTime MOD 60
+	workTime = (workTime - ss) / 60
+	mm = workTime MOD 60
+	workTime = (workTime - mm) / 60
+	hh = workTime MOD 24
+	dd = (workTime - hh) / 24
+	REM Format the time string
+	If dd = 0 Then
+		timestring = ""
+	Else
+		timestring = CStr(dd) + "D:"
+		If hh < 10 Then
+			timestring = timestring + "0"
+		End If
+	End If
+	timestring = timestring + CStr(hh) + ":"
+	If mm < 10 Then
+		timestring = timestring + "0"
+	End If
+	timestring = timestring + CStr(mm) + ":"
+	If ss < 10 Then
+		timestring = timestring + "0"
+	End If
+	timestring = timestring + CStr(ss)
+	SecToString = timestring
 End Function
 
 REM -----------------------------------
