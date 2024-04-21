@@ -105,42 +105,11 @@ Function DosTime(inTime)
 	DosTime = TimeValue(ssTime(0))
 End Function
 
-REM Convert N seconds to HH:MM:SS format
-Function SecToHMS(inSec)
-	Dim workTime,ss,mm,hh,timestring
+REM Convert N seconds to (D+)HH:MM:SS(.ss...) format
+Function SecToDHMSTimeStringX(inSec,inDecPlaces,bUseDays,DaySeparator)
+	Dim workTime,secFrac,ss,mm,hh,dd,timestring
 	workTime = Int(inSec)
-	ss = workTime MOD 60
-	workTime = (workTime - ss) / 60
-	mm = workTime MOD 60
-	hh = (workTime - mm) / 60
-	REM Format the time string
-	timestring = ""
-	If hh < 10 Then
-		timestring = "0"
-	End If
-	timestring = timestring + CStr(hh) + ":"
-	If mm < 10 Then
-		timestring = timestring + "0"
-	End If
-	timestring = timestring + CStr(mm) + ":"
-	If ss < 10 Then
-		timestring = timestring + "0"
-	End If
-	timestring = timestring + CStr(ss)
-	SecToHMS = timestring
-End Function
-
-REM Convert N seconds to HH:MM:SS.sss format (accurate to milliseconds)
-Function SecToHMSX(inSec)
-	Dim secFrac
 	secFrac = inSec - Int(inSec)
-	SecToHMSX = SecToHMS(inSec) + FormatNumber(secFrac,3,false)
-End Function
-
-REM Convert N seconds to DDD:HH:MM:SS format or HH:MM:SS format
-Function SecToString(inSec)
-	Dim workTime,ss,mm,hh,dd,timestring
-	workTime = Int(inSec)
 	ss = workTime MOD 60
 	workTime = (workTime - ss) / 60
 	mm = workTime MOD 60
@@ -148,15 +117,15 @@ Function SecToString(inSec)
 	hh = workTime MOD 24
 	dd = (workTime - hh) / 24
 	REM Format the time string
-	If dd = 0 Then
-		timestring = ""
-	Else
-		timestring = CStr(dd) + "D:"
+	If CBool(bUseDays) Then
+		timestring = CStr(dd) + DaySeparator
 		If hh < 10 Then
 			timestring = timestring + "0"
 		End If
+		timestring = timestring + CStr(hh) + ":"
+	Else
+		timestring = CStr((dd*24)+hh) + ":"
 	End If
-	timestring = timestring + CStr(hh) + ":"
 	If mm < 10 Then
 		timestring = timestring + "0"
 	End If
@@ -164,8 +133,40 @@ Function SecToString(inSec)
 	If ss < 10 Then
 		timestring = timestring + "0"
 	End If
-	timestring = timestring + CStr(ss)
-	SecToString = timestring
+	If inDecPlaces > 0 Then
+		timestring = timestring + FormatNumber(ss+secFrac,inDecPlaces,true)
+	Else
+		timestring = timestring + CStr(ss)
+	End If
+	SecToDHMSTimeStringX = timestring
+End Function
+
+Function SecToDHMSTimeString(inSec,inDecPlaces)
+	SecToDHMSTimeString = SecToDHMSTimeStringX(inSec,inDecPlaces,True,"d ")
+End Function
+
+Function SecToHMSTimeString(inSec,inDecPlaces)
+	SecToHMSTimeString = SecToDHMSTimeStringX(inSec,inDecPlaces,False,"")
+End Function
+
+REM Facade for D+HH:MM:SS.ss... format
+Function SecToDHMSX(inSec,inDecPlaces)
+	SecToDHMSX = SecToDHMSTimeString(inSec,inDecPlaces)
+End Function
+
+REM Facade for D+HH:MM:SS format
+Function SecToDHMS(inSec)
+	SecToDHMS = SecToDHMSTimeString(inSec,0)
+End Function
+
+REM Facade for HH:MM:SS.ss... format
+Function SecToHMSX(inSec,inDecPlaces)
+	SecToHMSX = SecToHMSTimeString(inSec,inDecPlaces)
+End Function
+
+REM Facade for HH:MM:SS format
+Function SecToHMS(inSec)
+	SecToHMS = SecToHMSTimeString(inSec,0)
 End Function
 
 REM -----------------------------------
