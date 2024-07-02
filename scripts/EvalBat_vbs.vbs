@@ -89,21 +89,86 @@ End Function
 
 REM Can convert ''%DATE%'' to a VBS Date
 REM In US, %DATE% format looks like "Wed 04/19/2023"
+REM VBScript doesn't like the written 'Day + Space' in DOS Date
 REM May not work outside of US
 Function DosDate(inDate)
-	Dim ssDate
-	ssDate=Split(inDate)
-	DosDate = DateValue(ssDate(1))
+	On Error Resume Next
+	DosDate = 0
+	Dim ssDate,offset,n
+	ssDate = Split(inDate)
+	n = UBound(ssDate)
+	If n >= 0 Then
+		Do While (Not IsNumeric( Left(ssDate(offset),1) )) And offset < UBound(ssDate)
+			offset = offset + 1
+		Loop
+		If offset <= UBound(ssDate) Then
+			DosDate = DateValue(ssDate(offset))
+		End If
+	End If
+	If Err.Number<>0 Then
+		DosDate = 0
+		Err.Clear
+	End If
 End Function
 
-REM Can convert ''%TIME%'' to a VBS Time
+REM Can convert ''%TIME%'' to a VBS 'Date'
 REM In US, %TIME% format looks like "13:11:06.75"
 REM VBScript doesn't like the decimal and hundreds in the seconds portion
 Function DosTime(inTime)
 	Dim ssTime
-	ssTime=Split(inTime,".")
+	ssTime = Split(inTime,".")
 	DosTime = TimeValue(ssTime(0))
 End Function
+
+REM Can convert ''%DATE% %TIME%'' to a VBS 'Date'
+REM Can also convert ''%DATE%'' or ''%TIME%'' to a VBS 'Date'
+REM NOTE: Requires at least one space between %DATE% and %TIME%
+REM and ''%DATE%'' must be before ''%TIME%'' if both are specified
+Function DosDateTime(inDateTime)
+	REM In order to handle malformed strings, ignore Errors in this function
+	On Error Resume Next
+	Dim ssDTSplit,dDateTime,dTime,offset,n
+	ssDTSplit = Split(inDateTime)
+	n = UBound(ssDTSplit)
+	If n < 0 Then
+		DosDateTime = 0
+	Else
+		offset = 0
+		Do While (Not IsNumeric( Left(ssDTSplit(offset),1) )) And offset < n
+			offset = offset + 1
+		Loop
+		dDateTime = DosDate(ssDTSplit(offset))
+		If dDateTime<>0 Then
+			offset = offset + 1
+		End If
+		If offset < n Then
+			Do While (Not IsNumeric( Left(ssDTSplit(offset),1) )) And offset < n
+				offset = offset + 1
+			Loop
+		End If
+		dTime = 0
+		If offset <= n Then
+			If Mid(ssDTSplit(offset),2,1) = ":" Or Mid(ssDTSplit(offset),3,1) = ":" Then
+				dTime = DosTime(ssDTSplit(offset))
+			End If
+		End If
+		DosDateTime = dDateTime + dTime
+	End If
+	Err.Clear
+End Function
+
+REM Helper function to get HMS Time String of Deltas between Dos Times (''%DATE% %TIME%'')
+Function HMSDosDateDiff(inStartTime, inEndTime)
+	HMSDosDateDiff = HMSDateDiff(DosDateTime(inStartTime),DosDateTime(inEndTime))
+End Function
+
+REM Helper function to get HMS Time String of Deltas between VBS Dates
+REM VBScript 'Now' is good for sampling current VBS Date
+Function HMSDateDiff(inStartTime, inEndTime)
+	HMSDateDiff = SecToHMS(DateDiff("s",inStartTime,inEndTime))
+End Function
+
+REM VBScript 'Timer' is good for sampling current VBS Seconds Counter (but it resets at 12AM)
 
 REM Convert N seconds to (D+)HH:MM:SS(.ss...) format
 Function SecToDHMSTimeStringX(inSec,inDecPlaces,bUseDays,DaySeparator)
